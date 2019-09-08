@@ -1,5 +1,5 @@
 {
-    "name": "ctrax/http-client",
+    "name": "c-trax/http-client",
     "description": "An http tool that signs and makes requests from the client instances to the central server and vice-verssa",
     "type": "librabry",
     "authors": [
