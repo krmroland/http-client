@@ -1,0 +1,32 @@
+{
+    "name": "ctrax/http-client",
+    "description": "An http tool that signs and makes requests from the client instances to the central server and vice-verssa",
+    "type": "librabry",
+    "authors": [
+        {
+            "name": "Ahimbisibwe Roland",
+            "email": "rolandmbasa@gmail.com"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "HttpClient\\": "src/"
+        }
+    },
+    "require-dev": {
+        "jakub-onderka/php-parallel-lint": "^1.0",
+        "symplify/easy-coding-standard": "^6.0"
+    },
+    "scripts": {
+        "lint": [
+            "parallel-lint  src",
+            "ecs check src"
+        ],
+        "lint:fix": [
+            "ecs check src --fix"
+        ]
+    }
+}
