@@ -5,6 +5,7 @@ namespace HttpClient;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use Illuminate\Support\Arr;
+use Illuminate\Http\Request;
 use RuntimeException;
 
 class HttpClient
@@ -57,7 +58,7 @@ class HttpClient
      */
     public function __call($method, $arguments)
     {
-        if (! in_array($method, ['get', 'put', 'post', 'options', 'head', 'delete', 'patch', 'request'], true)) {
+        if (!in_array($method, ['get', 'put', 'post', 'options', 'head', 'delete', 'patch', 'request'], true)) {
             throw new RuntimeException('Call to Undefined method ' . $method);
         }
         return $this->makeRequest($method, $arguments);
@@ -118,7 +119,7 @@ class HttpClient
             'base_uri' => static::$baseUrl,
             'handler' => $this->stack,
             'stream' => true,
-            'headers' => ['Content-Type' => 'Application/json'],
+            'headers' => ['Content-Type' => 'Application/json']
         ];
     }
 
@@ -179,5 +180,21 @@ class HttpClient
         } catch (\Exception $e) {
             throw new HttpClientException($e);
         }
+    }
+    /**
+     * Determines if a request has a valid signature
+     * @param  Request $request
+     * @param  string  $key
+     * @return boolean
+     */
+    public static function requestHasValidSignature(Request $request, $key)
+    {
+        $original = rtrim($request->url() . '?' . Arr::query(Arr::except($request->query(), 'signature')), '?');
+
+        $url = str_replace("http://", "https://", $original);
+
+        $signature = hash_hmac('sha256', $url, $key);
+
+        return hash_equals($signature, (string) $request->query('signature', ''));
     }
 }

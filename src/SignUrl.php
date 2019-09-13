@@ -83,6 +83,10 @@ class SignUrl
      */
     protected function urlSignature($request)
     {
-        return hash_hmac('sha256', (string) $request->getUri(), $this->apiSecret);
+        // we will trim the url & also replace any http(if any) with http(s) for consistency
+        // only for signing purpose(s), this doesn't change the url schema though
+        $url= trim(str_replace("http://", "https://", (string) $request->getUri()),"/");
+
+        return hash_hmac('sha256', $url, $this->apiSecret);
     }
 }
