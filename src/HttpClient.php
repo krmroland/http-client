@@ -10,6 +10,7 @@ use RuntimeException;
 
 class HttpClient
 {
+
     /**
      * The base url
      * @var string|null
@@ -35,19 +36,30 @@ class HttpClient
     protected $stack;
 
     /**
-     * Creates an instance of the Http class
+     * Determines if a request has a valid signature
+     * @param  Request $request
+     * @param  string  $key
+     * @return boolean
      */
-    public function __construct($apiKey = null, $apiSecret = null)
+    public static function requestHasValidSignature(Request $request, $key)
     {
-        $this->stack = HandlerStack::create();
+        $original = rtrim($request->url() . '?' . Arr::query(Arr::except($request->query(), 'signature')), '?');
 
-        $this->signature = new SignUrl($apiKey, $apiSecret);
+        $url = str_replace("http://", "https://", $original);
 
-        if ($apiKey && $apiSecret) {
-            $this->stack->push($this->signature, 'signature');
-        }
+        $signature = hash_hmac('sha256', $url, $key);
 
-        $this->options = $this->getDefaultOptions();
+        return hash_equals($signature, (string) $request->query('signature', ''));
+    }
+
+    /**
+     * Sets the global base url
+     * @param  string $url
+     * @return $this
+     */
+    public static function setGlobalBaseUri($url)
+    {
+        static::$baseUrl = rtrim($url, '/');
     }
 
     /**
@@ -65,23 +77,19 @@ class HttpClient
     }
 
     /**
-     * Sets the global base url
-     * @param  string $url
-     * @return $this
+     * Creates an instance of the Http class
      */
-    public static function setGlobalBaseUri($url)
+    public function __construct($apiKey = null, $apiSecret = null)
     {
-        static::$baseUrl = rtrim($url, '/');
-    }
+        $this->stack = HandlerStack::create();
 
-    /**
-     * Sets the instance base url
-     * @param  string $value
-     * @return string
-     */
-    public function baseUri($value)
-    {
-        return Arr::set($this->options, 'base_uri', rtrim($value, '/'));
+        $this->signature = new SignUrl($apiKey, $apiSecret);
+
+        if ($apiKey && $apiSecret) {
+            $this->stack->push($this->signature, 'signature');
+        }
+
+        $this->options = $this->getDefaultOptions();
     }
 
     /**
@@ -94,6 +102,16 @@ class HttpClient
         Arr::set($this->options, $key, $value);
 
         return $this;
+    }
+
+    /**
+     * Sets the instance base url
+     * @param  string $value
+     * @return string
+     */
+    public function baseUri($value)
+    {
+        return Arr::set($this->options, 'base_uri', rtrim($value, '/'));
     }
 
     /**
@@ -121,6 +139,19 @@ class HttpClient
             'stream' => true,
             'headers' => ['Content-Type' => 'Application/json']
         ];
+    }
+
+    /**
+     * Set(s) the guzzle option
+     * @param  path $key
+     * @param  mixed $value
+     * @return $this
+     */
+    public function option($key, $value)
+    {
+        Arr::set($this->options, $key, $value);
+
+        return $this;
     }
 
     /**
@@ -181,20 +212,5 @@ class HttpClient
             throw new HttpClientException($e);
         }
     }
-    /**
-     * Determines if a request has a valid signature
-     * @param  Request $request
-     * @param  string  $key
-     * @return boolean
-     */
-    public static function requestHasValidSignature(Request $request, $key)
-    {
-        $original = rtrim($request->url() . '?' . Arr::query(Arr::except($request->query(), 'signature')), '?');
 
-        $url = str_replace("http://", "https://", $original);
-
-        $signature = hash_hmac('sha256', $url, $key);
-
-        return hash_equals($signature, (string) $request->query('signature', ''));
-    }
 }
