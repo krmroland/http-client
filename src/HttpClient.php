@@ -10,12 +10,16 @@ use RuntimeException;
 
 class HttpClient
 {
-
     /**
      * The base url
      * @var string|null
      */
     public static $baseUrl;
+    /**
+     * The global response error handler
+     * @var callable
+     */
+    protected static $globalResponseErrorHandler;
 
     /**
      * The response class
@@ -34,6 +38,16 @@ class HttpClient
      * @var \GuzzleHttp\HandlerStack
      */
     protected $stack;
+
+    /**
+     * Static Global response error handler
+     * @param  callable $callback
+     * @return void
+     */
+    public static function globalResponseErrorHandler(callable $callback)
+    {
+        static::$globalResponseErrorHandler = $callback;
+    }
 
     /**
      * Determines if a request has a valid signature
@@ -209,8 +223,10 @@ class HttpClient
             $response = (new Client($this->options))->{$method}(...$arguments);
             return new static::$responseClass($response, $this);
         } catch (\Exception $e) {
+            if ($e->hasResponse() && is_callable(static::$globalResponseErrorHandler)) {
+                call_user_func_array(static::$globalResponseErrorHandler, [$e->getResponse()]);
+            }
             throw new HttpClientException($e);
         }
     }
-
 }
