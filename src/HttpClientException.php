@@ -43,7 +43,7 @@ class HttpClientException extends \Exception
     {
         return response()->json(
             array_merge(json_decode($response->getBody()->getContents() ?? [], true), [
-                'reason' => $response->getReasonPhrase()
+                'reason' => $response->getReasonPhrase(),
             ]),
             $response->getStatusCode()
         );

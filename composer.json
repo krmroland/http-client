@@ -10,24 +10,33 @@
     ],
     "require": {
         "guzzlehttp/guzzle": "^6.3",
-        "c-trax/http-client": "dev-master"
+        "illuminate/support": "^6.10"
     },
     "autoload": {
         "psr-4": {
             "HttpClient\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "require-dev": {
-        "jakub-onderka/php-parallel-lint": "^1.0",
-        "symplify/easy-coding-standard": "^6.0"
+        "symplify/easy-coding-standard": "^6.0",
+        "orchestra/testbench": "^4.0",
+        "phpunit/phpunit": "^8.5"
     },
     "scripts": {
-        "lint": [
-            "parallel-lint  src",
-            "ecs check src"
-        ],
-        "lint:fix": [
-            "ecs check src --fix"
-        ]
+        "test": "vendor/bin/phpunit --colors=always --testdox",
+        "lint": "npm run lint:check &&  vendor/bin/ecs check .",
+        "lint:fix": "npm run lint:fix && vendor/bin/ecs check . --fix"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "HttpClient\\ClientServiceProvider"
+            ]
+        }
     }
 }

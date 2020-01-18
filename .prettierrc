@@ -1,4 +1,7 @@
 {
-  "printWidth": 120,
-  "tabWidth": 4
+  "printWidth": 100,
+  "tabWidth": 4,
+  "braceStyle":"psr-2",
+  "singleQuote":true,
+  "trailingCommaPHP":"php7.2"
 }

@@ -1,0 +1,30 @@
+services:
+    PhpCsFixer\Fixer\Import\OrderedImportsFixer:
+        sort_algorithm: 'length'
+    PhpCsFixer\Fixer\Phpdoc\PhpdocAddMissingParamAnnotationFixer: ~
+    PhpCsFixer\Fixer\Phpdoc\PhpdocOrderFixer: ~
+    PhpCsFixer\Fixer\Phpdoc\PhpdocToCommentFixer: ~
+    PhpCsFixer\Fixer\Comment\SingleLineCommentStyleFixer: ~
+    PhpCsFixer\Fixer\Comment\HashToSlashCommentFixer: ~
+    PhpCsFixer\Fixer\Import\SingleImportPerStatementFixer: ~
+
+
+parameters:
+    sets:
+        - 'common'
+        - 'clean-code'
+        - 'psr12'
+    exclude_files:
+      - "*/node_modules/*"
+      - "*/vendor/*"
+    skip:
+        PhpCsFixer\Fixer\Strict\StrictComparisonFixer: ~
+        PhpCsFixer\Fixer\Strict\StrictParamFixer: ~
+        PhpCsFixer\Fixer\PhpUnit\PhpUnitStrictFixer: ~
+        PHP_CodeSniffer\Standards\Generic\Sniffs\CodeAnalysis\AssignmentInConditionSniff: ~
+        PhpCsFixer\Fixer\LanguageConstruct\IsNullFixer: ~
+        PhpCsFixer\Fixer\Operator\NotOperatorWithSuccessorSpaceFixer: ~ 
+        SlevomatCodingStandard\Sniffs\PHP\UselessParenthesesSniff.UselessParentheses: ~
+        SlevomatCodingStandard\Sniffs\Classes\TraitUseDeclarationSniff.MultipleTraitsPerDeclaration: ~
+   
+        

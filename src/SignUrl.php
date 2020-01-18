@@ -2,8 +2,8 @@
 
 namespace HttpClient;
 
-use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
+use GuzzleHttp\Psr7\Request;
 
 class SignUrl
 {
@@ -39,7 +39,9 @@ class SignUrl
     public function __invoke($handler)
     {
         return function ($request, array $options) use (&$handler) {
-            $request = $request->withUri($this->signRequestUrl($request))->withHeader('X-API-KEY', $this->apiKey);
+            $request = $request
+                ->withUri($this->signRequest($request))
+                ->withHeader('X-API-KEY', $this->apiKey);
             return $handler($request, $options);
         };
     }
@@ -52,6 +54,7 @@ class SignUrl
     public function apiKey($key)
     {
         $this->apiKey = $key;
+
         return $this;
     }
 
@@ -72,7 +75,7 @@ class SignUrl
      * @param  Request $request
      * @return string
      */
-    protected function signRequestUrl($request)
+    protected function signRequest($request)
     {
         return Uri::withQueryValue($request->getUri(), 'signature', $this->urlSignature($request));
     }
@@ -85,7 +88,7 @@ class SignUrl
     {
         // we will trim the url & also replace any http(if any) with http(s) for consistency
         // only for signing purpose(s), this doesn't change the url schema though
-        $url= trim(str_replace("http://", "https://", (string) $request->getUri()),"/");
+        $url = trim(str_replace('http://', 'https://', (string) $request->getUri()), '/');
 
         return hash_hmac('sha256', $url, $this->apiSecret);
     }

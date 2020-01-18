@@ -2,22 +2,11 @@
 
 namespace HttpClient;
 
-use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Arr;
+use GuzzleHttp\Psr7\Response;
 
 class HttpResponse
 {
-    /**
-     * Creates an instance of this class
-     * @param Data\Utils\Http|null $client
-     */
-    public function __construct(Response $response, $client)
-    {
-        $this->response = $response;
-
-        $this->client = $client;
-    }
-
     /**
      * Channel all dynamic method calls to the response
      * @param  string $method
@@ -27,6 +16,17 @@ class HttpResponse
     public function __call($method, $arguments)
     {
         return $this->response->{$method}(...$arguments);
+    }
+
+    /**
+     * Creates an instance of this class
+     * @param Data\Utils\Http|null $client
+     */
+    public function __construct(Response $response, $client)
+    {
+        $this->response = $response;
+
+        $this->client = $client;
     }
 
     /**
@@ -40,7 +40,18 @@ class HttpResponse
     }
 
     /**
+     * The base response
+     * @return \GuzzleHttp\Psr7\Response
+     */
+    public function base()
+    {
+        return $this->response;
+    }
+
+    /**
      * Gets the response data
+     * @param null|mixed $key
+     * @param null|mixed $default
      * @return array
      */
     public function data($key = null, $default = null)
