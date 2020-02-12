@@ -39,6 +39,20 @@ class ApiClient
         foreach (array_merge($this->defaultOptions, $options) as $key => $value) {
             $this->getClient()->addOption($key, $value);
         }
+
+        $this->setUp();
+    }
+
+    /**
+     * Gets the client instance
+     * @return \HttpClient\Contracts\HttpClient
+     */
+    public function getClient()
+    {
+        if (!$this->client) {
+            $this->client = app(HttpClient::class);
+        }
+        return $this->client;
     }
 
     /**
@@ -53,14 +67,9 @@ class ApiClient
     }
 
     /**
-     * Gets the client instance
-     * @return \HttpClient\Contracts\HttpClient
+     * Adds a setup method
      */
-    public function getClient()
+    protected function setUp(): void
     {
-        if (!$this->client) {
-            $this->client = app(HttpClient::class);
-        }
-        return $this->client;
     }
 }
