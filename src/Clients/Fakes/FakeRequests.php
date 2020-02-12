@@ -69,7 +69,7 @@ class FakeRequests
         return function (callable $handler) {
             return function ($request, array $options) use ($handler) {
                 if (!$this->requestIsMocked($request)) {
-                    return \GuzzleHttp\Promise\promise_for(new Response(404));
+                    return $this->rejectUnMockedRequest($request);
                 }
 
                 return $handler($request, $options)->then(
@@ -128,6 +128,24 @@ class FakeRequests
         $this->addRequestToExecutedList($request, new FakeRequest($request, $response, $options));
 
         return $response;
+    }
+
+    /**
+     * Reject un mocked request
+     * @param  Request $request
+     * @return Promise
+     */
+    protected function rejectUnMockedRequest($request)
+    {
+        return \GuzzleHttp\Promise\promise_for(
+            new Response(
+                404,
+                [],
+                null,
+                1.1,
+                vsprintf('%s %s has not been mocked', [$request->getMethod(), $request->getUri()])
+            )
+        );
     }
 
     /**

@@ -42,7 +42,7 @@ class HttpClientException extends \Exception
     protected function transformResponse($response)
     {
         return response()->json(
-            array_merge(json_decode($response->getBody()->getContents() ?? [], true), [
+            array_merge((array) json_decode($response->getBody()->getContents() ?? [], true), [
                 'reason' => $response->getReasonPhrase(),
             ]),
             $response->getStatusCode()
