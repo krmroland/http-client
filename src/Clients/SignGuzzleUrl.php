@@ -1,36 +1,13 @@
 <?php
 
-namespace HttpClient;
+namespace HttpClient\Clients;
 
 use GuzzleHttp\Psr7\Uri;
 use GuzzleHttp\Psr7\Request;
+use HttpClient\UrlSignature;
 
-class SignUrl
+class SignGuzzleUrl extends UrlSignature
 {
-    /**
-     * The api key
-     * @var string
-     */
-    protected $apiKey;
-
-    /**
-     * The ai secret
-     * @var string
-     */
-    protected $apiSecret;
-
-    /**
-     * Creates an instance of this  class
-     * @param string $apiKey
-     * @param string $apiSecret
-     */
-    public function __construct($apiKey, $apiSecret)
-    {
-        $this->apiKey = $apiKey;
-
-        $this->apiSecret = $apiSecret;
-    }
-
     /**
      * executes the middleware returning the next middleware
      * @param  callable $handler
@@ -42,34 +19,10 @@ class SignUrl
             $request = $request
                 ->withUri($this->signRequest($request))
                 ->withHeader('X-API-KEY', $this->apiKey);
+
             return $handler($request, $options);
         };
     }
-
-    /**
-     * Sets the API key
-     * @param  string $key
-     * @return $this
-     */
-    public function apiKey($key)
-    {
-        $this->apiKey = $key;
-
-        return $this;
-    }
-
-    /**
-     * The api Secret
-     * @param  string $secret
-     * @return $this;
-     */
-    public function apiSecret($secret)
-    {
-        $this->apiSecret = $secret;
-
-        return $this;
-    }
-
     /**
      * Signs request url
      * @param  Request $request
