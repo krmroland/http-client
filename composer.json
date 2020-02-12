@@ -10,7 +10,7 @@
     ],
     "require": {
         "guzzlehttp/guzzle": "^6.3",
-        "illuminate/support": "^6.10"
+        "illuminate/support": "^5.8"
     },
     "autoload": {
         "psr-4": {
@@ -24,7 +24,7 @@
     },
     "require-dev": {
         "symplify/easy-coding-standard": "^6.0",
-        "orchestra/testbench": "^4.0",
+        "orchestra/testbench": "^3.8",
         "phpunit/phpunit": "^8.5"
     },
     "scripts": {
