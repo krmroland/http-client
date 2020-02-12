@@ -2,8 +2,9 @@
 
 namespace HttpClient;
 
-use HttpClient\Clients\ClientManager;
+use HttpClient\Contracts\HttpClient;
 use Illuminate\Support\ServiceProvider;
+use HttpClient\Clients\GuzzleHttpClient;
 
 class ClientServiceProvider extends ServiceProvider
 {
@@ -14,8 +15,6 @@ class ClientServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(ClientManager::class, function ($app) {
-            return new ClientManager($app);
-        });
+        $this->app->bind(HttpClient::class, GuzzleHttpClient::class);
     }
 }

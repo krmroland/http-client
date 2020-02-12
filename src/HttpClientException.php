@@ -27,8 +27,8 @@ class HttpClientException extends \Exception
      */
     public function render()
     {
-        if ($this->exception->hasResponse()) {
-            return $this->transformResponse($this->exception->getResponse());
+        if ($response = $this->getResponse()) {
+            return $this->transformResponse($response);
         }
 
         return response()->json(['message' => $this->exception->getMessage()], 500);
@@ -47,5 +47,14 @@ class HttpClientException extends \Exception
             ]),
             $response->getStatusCode()
         );
+    }
+    /**
+     * Gets the exception response
+     * @return \GuzzleHttp\Psr7\Response|null
+     */
+    public function getResponse()
+    {
+        //some exceptions don't have responses
+        return $this->exception->hasResponse() ? $this->exception->getResponse() : null;
     }
 }

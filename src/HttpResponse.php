@@ -20,13 +20,10 @@ class HttpResponse
 
     /**
      * Creates an instance of this class
-     * @param Data\Utils\Http|null $client
      */
-    public function __construct(Response $response, $client)
+    public function __construct(Response $response)
     {
         $this->response = $response;
-
-        $this->client = $client;
     }
 
     /**
