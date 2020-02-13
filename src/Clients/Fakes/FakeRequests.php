@@ -4,6 +4,7 @@ namespace HttpClient\Clients\Fakes;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\Assert as PhpUnit;
 use GuzzleHttp\Handler\MockHandler as GuzzleMockHandler;
 
 class FakeRequests
@@ -40,6 +41,22 @@ class FakeRequests
         Arr::set($this->mocks, FakeRequest::joinVerbAndUrl($verb, $url), $response);
 
         return $response;
+    }
+
+    /**
+     * Assert that a given request call was made
+     * @param  string        $url
+     * @param  string      $verb
+     * @param  callable|null $callback
+     * @return null
+     */
+    public function assertExecuted($url, $verb = 'get')
+    {
+        $executed = $this->executed()->find($url, $verb);
+
+        PhpUnit::assertTrue(count($executed) > 0, "Failed asserting that $verb $url was called ");
+
+        return $this;
     }
 
     /**

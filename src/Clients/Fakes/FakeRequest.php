@@ -7,6 +7,11 @@ use Illuminate\Support\Str;
 class FakeRequest
 {
     /**
+     * The request key
+     * @var string
+     */
+    public $key;
+    /**
      * The request object
      * @var Request
      */
@@ -62,5 +67,6 @@ class FakeRequest
         $this->response = $response;
         $this->options = $options;
         $this->error = $error;
+        $this->key = static::requestKeyPath($request);
     }
 }

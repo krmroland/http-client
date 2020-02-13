@@ -21,6 +21,22 @@ class ExecutedRequests extends Collection
     {
         $this->requests = $requests;
 
+        $data = [];
+
         parent::__construct(Arr::flatten($requests));
+    }
+    /**
+     * Finds a request by url and verb
+     * @param   $url  string
+     * @param  string $verb
+     * @return collection
+     */
+    public function find($url, $verb = 'GET')
+    {
+        $key = FakeRequest::joinVerbAndUrl($verb, $url);
+
+        return $this->filter(function ($item) use ($key) {
+            return $item->key === $key;
+        })->toArray();
     }
 }

@@ -66,4 +66,15 @@ class HttpClientTest extends TestCase
             hash_equals($signature, hash_hmac('sha256', 'https://example.com/test', 'secret'))
         );
     }
+
+    public function test_assert_executed_passes_if_a_request_is_made()
+    {
+        Http::onHttpSuccess(function ($response) {
+            $this->assertEquals($response->data(), ['message' => 'Hello world']);
+        })
+            ->mockRequest('api/v1/tests', ['message' => 'Hello world'])
+            ->get('api/v1/tests');
+
+        Http::requests()->assertExecuted('api/v1/tests');
+    }
 }
