@@ -14,6 +14,13 @@ class HttpClientTest extends TestCase
         $this->assertContains(['base_uri' => 'https://example.com'], $api->getOptions());
     }
 
+    public function test_http_get_option()
+    {
+        $api = Http::setBaseUri('https://example.com');
+
+        $this->assertEquals($api->getOption('base_uri'), 'https://example.com');
+    }
+
     public function test_it_throws_an_exception_if_agiven_request_is_not_mocked()
     {
         $this->expectException(HttpClientException::class);
@@ -24,6 +31,20 @@ class HttpClientTest extends TestCase
             );
         } catch (HttpClientException $e) {
             $this->assertEquals($e->getResponse()->getStatusCode(), 404);
+            throw $e;
+        }
+    }
+
+    public function test_it_sets_the_client_on_http_client_exception()
+    {
+        $this->expectException(HttpClientException::class);
+
+        try {
+            Http::mockRequest('api/v1/test', ['message' => 'Hello world'])->get(
+                'api/v1/unmocked-request'
+            );
+        } catch (HttpClientException $e) {
+            $this->assertEquals(Http::getFacadeRoot(), $e->getClient());
             throw $e;
         }
     }

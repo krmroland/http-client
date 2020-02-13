@@ -139,7 +139,7 @@ class GuzzleHttpClient extends BaseClient
             );
         }
 
-        throw new HttpClientException($exception);
+        throw new HttpClientException($exception, $this);
     }
 
     /**

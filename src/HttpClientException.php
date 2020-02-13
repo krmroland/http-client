@@ -2,6 +2,8 @@
 
 namespace HttpClient;
 
+use HttpClient\Contracts\HttpClient;
+
 class HttpClientException extends \Exception
 {
     /**
@@ -9,16 +11,22 @@ class HttpClientException extends \Exception
      * @var Exception
      */
     protected $exception;
+    /**
+     * The client making the exception
+     * @var HttpClient
+     */
+    protected $client;
 
     /**
      * Creates an instance of the exception
      * @param Exception $exception
      */
-    public function __construct($exception)
+    public function __construct($exception, HttpClient $client)
     {
         parent::__construct($exception->getMessage());
 
         $this->exception = $exception;
+        $this->client = $client;
     }
 
     /**
@@ -56,5 +64,13 @@ class HttpClientException extends \Exception
     {
         //some exceptions don't have responses
         return $this->exception->hasResponse() ? $this->exception->getResponse() : null;
+    }
+    /**
+     * The Http client
+     * @return \HttpClient\Contracts\HttpClient
+     */
+    public function getClient()
+    {
+        return $this->client;
     }
 }

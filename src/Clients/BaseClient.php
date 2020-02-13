@@ -78,6 +78,17 @@ abstract class BaseClient implements HttpClient
     }
 
     /**
+     * Adds an http option
+     * @param string $key
+     * @param string $value
+     * @param null|mixed $default
+     */
+    public function getOption($key, $default = null)
+    {
+        return Arr::get($this->options, $key, $default);
+    }
+
+    /**
      * Gets the available options
      * @return array
      */
