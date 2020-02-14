@@ -81,10 +81,22 @@ class HttpClientTest extends TestCase
         // we need to make sure the apu was sent with the signature
         $entry = with($api->requests()->executed())->first();
 
-        $signature = str_replace('signature=', '', $entry->request->getUri()->getQuery());
+        $this->assertTrue($api->signature()->urlIsSigned($entry->request->getUri()));
+    }
+
+    public function test_it_url_signature_passes_for_http_routes()
+    {
+        $api = Http::signUrl('key', 'secret')
+            ->setBaseUri('https://example.com')
+            ->mockRequest('test', []);
+
+        $api->get('test');
+
+        // we need to make sure the apu was sent with the signature
+        $entry = with($api->requests()->executed())->first();
 
         $this->assertTrue(
-            hash_equals($signature, hash_hmac('sha256', 'https://example.com/test', 'secret'))
+            $api->signature()->urlIsSigned($entry->request->getUri()->withScheme('http'))
         );
     }
 

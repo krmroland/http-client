@@ -54,26 +54,17 @@ class GuzzleHttpClient extends BaseClient
     }
     /**
      * Signs a given api request
-     * @param  string $apiKey
-     * @param  string $apiSecret
+     * @param  string $key
+     * @param  string $secret
      * @return $this
      */
-    public function signUrl($apiKey, $apiSecret)
+    public function signUrl($key, $secret)
     {
-        $this->signature = new SignGuzzleUrl($apiKey, $apiSecret);
+        $signature = new SignGuzzleUrl($key, $secret);
 
-        $this->getHandlerStack()->push($this->signature, 'signature');
+        $this->getHandlerStack()->push($signature, 'signature');
 
-        return $this;
-    }
-
-    /**
-     * The request signature
-     * @return SignedUrl
-     */
-    public function signature()
-    {
-        return $this->signature;
+        return $this->setSignature($signature);
     }
 
     /**

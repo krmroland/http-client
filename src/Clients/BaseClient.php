@@ -5,6 +5,7 @@ namespace HttpClient\Clients;
 use Exception;
 use Illuminate\Support\Arr;
 use HttpClient\HttpResponse;
+use HttpClient\UrlSignature;
 use GuzzleHttp\Psr7\Response;
 use HttpClient\Contracts\HttpClient;
 use Illuminate\Support\Facades\Request;
@@ -15,7 +16,7 @@ abstract class BaseClient implements HttpClient
 {
     /**
      * The url signature
-     * @var \HttpClient\SignUrl|null
+     * @var \HttpClient\UrlSignature
      */
     protected $signature;
     /**
@@ -139,6 +140,26 @@ abstract class BaseClient implements HttpClient
     public function setBaseUri($url)
     {
         return $this->addOption('base_uri', rtrim($url, '/'));
+    }
+
+    /**
+     * Sets the url signature
+     * @param UrlSignature $signature
+     */
+    public function setSignature(UrlSignature $signature)
+    {
+        $this->signature = $signature;
+
+        return $this;
+    }
+
+    /**
+     * Gets the url signature
+     * @return \HttpClient\UrlSignature|null
+     */
+    public function signature()
+    {
+        return $this->signature;
     }
 
     /**

@@ -3,7 +3,7 @@
 namespace HttpClient;
 
 use Illuminate\Support\Arr;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Request;
 
 class UrlSignature
 {
@@ -11,24 +11,59 @@ class UrlSignature
      * The api key
      * @var string
      */
-    protected $apiKey;
+    protected $key;
 
     /**
      * The ai secret
      * @var string
      */
-    protected $apiSecret;
+    protected $secret;
+    /**
+     * The algorithm used for signing requests
+     * @var string
+     */
+    protected $algorithm;
 
     /**
      * Creates an instance of this  class
-     * @param string $apiKey
-     * @param string $apiSecret
+     * @param string $key
+     * @param string $secret
      */
-    public function __construct($apiKey, $apiSecret)
+    public function __construct($key, $secret, $algorithm = 'sha256')
     {
-        $this->apiKey = $apiKey;
+        $this->key = $key;
 
-        $this->apiSecret = $apiSecret;
+        $this->secret = $secret;
+
+        $this->algorithm = $algorithm;
+    }
+
+    /**
+     * Creates a signature for the request url
+     * @param string $url
+     * @param  Request $request
+     */
+    public function generateUrlSignature($url)
+    {
+        return hash_hmac($this->algorithm, $this->normalizeUrl($url), $this->secret);
+    }
+
+    /**
+     * Get(s) the key
+     * @return string
+     */
+    public function getKey()
+    {
+        return $this->key;
+    }
+
+    /**
+     * Get(s) the secret
+     * @return string
+     */
+    public function getSecret()
+    {
+        return $this->secret;
     }
 
     /**
@@ -36,9 +71,9 @@ class UrlSignature
      * @param  string $key
      * @return $this
      */
-    public function apiKey($key)
+    public function setKey($key)
     {
-        $this->apiKey = $key;
+        $this->key = $key;
 
         return $this;
     }
@@ -48,30 +83,42 @@ class UrlSignature
      * @param  string $secret
      * @return $this;
      */
-    public function apiSecret($secret)
+    public function setSecret($secret)
     {
-        $this->apiSecret = $secret;
+        $this->secret = $secret;
 
         return $this;
     }
 
     /**
      * Determines if a request has a valid signature
-     * @param  Request $request
-     * @param  string  $key
-     * @param mixed $algorithm
+     * @param  string $full url
      * @return boolean
      */
-    public static function requestIsSigned(Request $request, $key, $algorithm = 'sha256')
+    public function urlIsSigned($fullUrl)
     {
-        $query = Arr::query(Arr::except($request->query(), 'signature'));
+        $request = Request::create($this->normalizeUrl($fullUrl));
 
-        $original = rtrim($request->url() . '?' . $query, '?');
+        $url = $request->url();
 
-        $url = str_replace('http://', 'https://', $original);
+        $queryStringsExceptSignature = Arr::query(Arr::except($request->query(), 'signature'));
 
-        $signature = hash_hmac($algorithm, $url, $key);
+        $original = rtrim($url . '?' . $queryStringsExceptSignature, '?');
+
+        $signature = hash_hmac($this->algorithm, $original, $this->secret);
 
         return hash_equals($signature, (string) $request->query('signature', ''));
+    }
+
+    /**
+     * Normalizes url
+     * @param  string $url
+     * @return string
+     */
+    protected function normalizeUrl($url)
+    {
+        // we will trim the url &  replace any http(if any) with http(s) for consistency
+        // only for signing purpose(s), this doesn't change the url schema though
+        return trim(str_replace('http://', 'https://', (string) $url), '/');
     }
 }
